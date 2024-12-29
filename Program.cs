@@ -34,10 +34,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 
 // Configure Kestrel to listen on port 80
-// builder.WebHost.ConfigureKestrel(serverOptions =>
-// {
-//     serverOptions.ListenAnyIP(80); 
-// });
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(80); 
+});
 
 var userPoolId = configuration["UserPoolId"];
 if (userPoolId.IsNullOrEmpty())

@@ -7,7 +7,7 @@ source .env
 docker run -d \
   --name manage-tags \
   -p 5280:80 \
-  -e LocalDBConnection=$LOCAL_DB_CONX \
+  -e LocalDBConnection=$TASKD_DB_CONX \
   -e UserPoolId=$USER_POOL_ID \
   -e Region=$REGION \
   tylersimeone/projectb/manage-tags:latest

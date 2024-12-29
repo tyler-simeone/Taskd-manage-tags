@@ -25,4 +25,4 @@ COPY --from=build-env /app/out .
 EXPOSE 80
 
 # Set the entry point for the application
-ENTRYPOINT ["dotnet", "manage-tags.dll"]
+ENTRYPOINT ["dotnet", "Taskd-manage-tags.dll"]
