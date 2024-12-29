@@ -15,8 +15,8 @@ namespace manage_tags.src.models
 
         public int CreateUserId { get; set; }
 
-        public DateTime UpdateDatetime { get; set; }
+        public DateTime? UpdateDatetime { get; set; }
 
-        public int UpdateUserId { get; set; }
+        public int? UpdateUserId { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace manage_tags.src.dataservice
 
                             while (reader.Read())
                             {
-                                models.Tag tag = ExtractTagFromReader(reader);
+                                Tag tag = ExtractTagFromReader(reader);
                                 tagList.Tags.Add(tag);
                             }
 
@@ -83,16 +83,16 @@ namespace manage_tags.src.dataservice
 
         #region HELPERS
 
-        private models.Tag ExtractTagFromReader(MySqlDataReader reader)
+        private static Tag ExtractTagFromReader(MySqlDataReader reader)
         {
             int id = reader.GetInt32("TagId");
             string name = reader.GetString("TagName");
             DateTime createDatetime = reader.GetDateTime("CreateDatetime");
             int createUserId = reader.GetInt32("CreateUserId");
-            DateTime updateDatetime = reader.GetDateTime("UpdateDatetime");
-            int updateUserId = reader.GetInt32("UpdateUserId");
+            DateTime? updateDatetime = reader.IsDBNull(reader.GetOrdinal("UpdateDatetime")) ? null : reader.GetDateTime("UpdateDatetime");
+            int? updateUserId = reader.IsDBNull(reader.GetOrdinal("UpdateUserId")) ? null : reader.GetInt32("UpdateUserId");
 
-            return new models.Tag()
+            return new Tag()
             {
                 TagId = id,
                 TagName = name,
