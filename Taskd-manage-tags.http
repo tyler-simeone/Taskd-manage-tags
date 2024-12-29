@@ -1,0 +1,6 @@
+@Taskd_manage_tags_HostAddress = http://localhost:5136
+
+GET {{Taskd_manage_tags_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
