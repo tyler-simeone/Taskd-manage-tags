@@ -1,10 +1,10 @@
-namespace manage_tags.src.models
+namespace Taskd_manage_tags.src.models
 {
-    public class TagList : ResponseBase
+    public class TagList : Response
     {
         public TagList()
         {
-            Tags = new List<Tag>();
+            Tags = [];
         }
 
         public List<Tag> Tags { get; set; }

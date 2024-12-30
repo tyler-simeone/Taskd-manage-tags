@@ -1,7 +1,8 @@
-using manage_tags.src.models;
-using manage_tags.src.repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Taskd_manage_tags.src.models;
+using Taskd_manage_tags.src.models.requests;
+using Taskd_manage_tags.src.repository;
 
 namespace manage_tags.src.controller
 {

@@ -1,6 +1,6 @@
-using manage_tags.src.models;
+using Taskd_manage_tags.src.models;
 
-namespace manage_tags.src.dataservice
+namespace Taskd_manage_tags.src.dataservice
 {
     public interface ITagsDataservice
     {

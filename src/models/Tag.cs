@@ -1,6 +1,6 @@
-namespace manage_tags.src.models
+namespace Taskd_manage_tags.src.models
 {
-    public class Tag : ResponseBase
+    public class Tag : Response
     {
         public Tag()
         {

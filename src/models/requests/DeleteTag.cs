@@ -1,11 +1,14 @@
-public class DeleteTag
+namespace Taskd_manage_tags.src.models.requests
 {
-    public DeleteTag()
+    public class DeleteTag
     {
-        
-    }
+        public DeleteTag()
+        {
 
-    public int UserId;
-    
-    public int TagId;
+        }
+
+        public int UserId;
+
+        public int TagId;
+    }
 }

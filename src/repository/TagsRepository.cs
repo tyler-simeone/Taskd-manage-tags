@@ -1,7 +1,7 @@
-using manage_tags.src.dataservice;
-using manage_tags.src.models;
+using Taskd_manage_tags.src.dataservice;
+using Taskd_manage_tags.src.models;
 
-namespace manage_tags.src.repository
+namespace Taskd_manage_tags.src.repository
 {
     public class TagsRepository : ITagsRepository
     {

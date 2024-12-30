@@ -1,3 +1,5 @@
+using Taskd_manage_tags.src.models.requests;
+
 public interface IRequestValidator
 {
     bool ValidateGetTags(int userId);

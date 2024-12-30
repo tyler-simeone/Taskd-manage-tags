@@ -1,9 +1,8 @@
-using System.Text.Json;
-using manage_tags.src.dataservice;
-using manage_tags.src.repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Taskd_manage_tags.src.dataservice;
+using Taskd_manage_tags.src.repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +60,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = $"https://cognito-idp.{awsRegion}.amazonaws.com/{userPoolId}"
         };
     });
+    
 // Add authorization
 builder.Services.AddAuthorization();
 

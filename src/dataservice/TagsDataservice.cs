@@ -1,14 +1,16 @@
 using System.Data;
-using manage_tags.src.models;
+using Taskd_manage_tags.src.models;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using Taskd_manage_tags.src.models.errors;
+using Taskd_manage_tags.src.util;
 
-namespace manage_tags.src.dataservice
+namespace Taskd_manage_tags.src.dataservice
 {
     public class TagsDataservice : ITagsDataservice
     {
-        private IConfiguration _configuration;
-        private string _conx;
+        private readonly IConfiguration _configuration;
+        private readonly string _conx;
 
         public TagsDataservice(IConfiguration configuration)
         {
@@ -21,38 +23,30 @@ namespace manage_tags.src.dataservice
 
         public async Task<TagList> GetTags(int userId, int boardId)
         {
-            using (MySqlConnection connection = new(_conx))
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TagGetAllByUserIdAndBoardId", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramUserId", userId);
+            command.Parameters.AddWithValue("@paramBoardId", boardId);
+
+            var tagList = new TagList();
+
+            try
             {
-                using (MySqlCommand command = new("taskd_db_dev.TagGetAllByUserIdAndBoardId", connection))
+                await connection.OpenAsync();
+                using MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    
-                    command.Parameters.AddWithValue("@paramUserId", userId);
-                    command.Parameters.AddWithValue("@paramBoardId", boardId);
-
-                    try
-                    {
-                        await connection.OpenAsync();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
-                        {
-                            var tagList = new TagList();
-
-                            while (reader.Read())
-                            {
-                                Tag tag = ExtractTagFromReader(reader);
-                                tagList.Tags.Add(tag);
-                            }
-
-                            return tagList;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        throw;
-                    }
+                    Tag tag = ExtractTagFromReader(reader);
+                    tagList.Tags.Add(tag);
                 }
+
+                return tagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetTags Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -60,61 +54,84 @@ namespace manage_tags.src.dataservice
         {
             using (MySqlConnection connection = new(_conx))
             {
-                using (MySqlCommand command = new("taskd_db_dev.TagPersist", connection))
+                using MySqlCommand command = new("taskd_db_dev.TagCheckIsUnique", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@paramTagName", tagName);
+                command.Parameters.AddWithValue("@paramBoardId", boardId);
+
+                try
                 {
-                    command.CommandType = CommandType.StoredProcedure;
+                    await connection.OpenAsync();
 
-                    command.Parameters.AddWithValue("@paramTagName", tagName);
-                    command.Parameters.AddWithValue("@paramBoardId", boardId);
-                    command.Parameters.AddWithValue("@paramCreateUserId", userId);
-
-                    int tagId = 0;
-
-                    try
+                    using MySqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
-                        await connection.OpenAsync();
+                        if (!reader.IsDBNull(reader.GetOrdinal("TagId")))
+                            throw new ExistingTagError(
+                                StatusCodes.Status500InternalServerError,
+                                ErrorMessages.ExistingTagError,
+                                userId,
+                                boardId,
+                                tagName
+                            );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"taskd_db_dev.TagCheckIsUnique Error: {ex.Message}");
+                    throw;
+                }
+            }
 
-                        using (MySqlDataReader reader = command.ExecuteReader())
+            using (MySqlConnection connection = new(_conx))
+            {
+                using MySqlCommand command = new("taskd_db_dev.TagPersist", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@paramTagName", tagName);
+                command.Parameters.AddWithValue("@paramBoardId", boardId);
+                command.Parameters.AddWithValue("@paramCreateUserId", userId);
+
+                int tagId = 0;
+
+                try
+                {
+                    await connection.OpenAsync();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                tagId = reader.GetInt32("TagId");
-                            }
+                            tagId = reader.GetInt32("TagId");
                         }
-                        
-                        return tagId;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        throw;
-                    }
+
+                    return tagId;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"taskd_db_dev.TagPersist Error: {ex.Message}");
+                    throw;
                 }
             }
         }
 
         public async void DeleteTag(int tagId, int userId)
         {
-            using (MySqlConnection connection = new(_conx))
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TagDelete", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramTagId", tagId);
+            command.Parameters.AddWithValue("@paramUpdateUserId", userId);
+
+            try
             {
-                using (MySqlCommand command = new("taskd_db_dev.TagDelete", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@paramTagId", tagId);
-                    command.Parameters.AddWithValue("@paramUpdateUserId", userId);
-
-                    try
-                    {
-                        await connection.OpenAsync();
-                        await command.ExecuteNonQueryAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                        throw;
-                    }
-                }
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
             }
         }
 
