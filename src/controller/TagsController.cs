@@ -33,9 +33,15 @@ namespace manage_tags.src.controller
                     TagList tagList = await _tagsRepository.GetTags(userId, boardId);
                     return Ok(tagList);
                 }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
                     throw;
                 }
             }
@@ -58,7 +64,7 @@ namespace manage_tags.src.controller
                 }
                 catch (Error ex)
                 {
-                    Console.WriteLine($"Error: {ex.StackTrace}");
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
                     var error = ErrorHelper.MapExceptionToError(ex);
                     return BadRequest(error);
                 }
@@ -85,9 +91,15 @@ namespace manage_tags.src.controller
                     _tagsRepository.DeleteTag(tagId, userId);
                     return Ok();
                 }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
                     throw;
                 }
             }
