@@ -69,10 +69,7 @@ namespace Taskd_manage_tags.src.dataservice
                         if (!reader.IsDBNull(reader.GetOrdinal("TagId")))
                             throw new ExistingTagError(
                                 StatusCodes.Status500InternalServerError,
-                                ErrorMessages.ExistingTagError,
-                                userId,
-                                boardId,
-                                tagName
+                                String.Format(ErrorMessages.ExistingTagError, boardId)
                             );
                     }
                 }

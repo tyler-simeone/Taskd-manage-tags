@@ -7,9 +7,9 @@ namespace Taskd_manage_tags.src.models.errors
         ) : Exception
     {
         public int StatusCode { get; set; } = statusCode;
-
-        public string ExceptionMessage { get; set; } = exceptionMessage;
-
+        
+        public string ExceptionDetails { get; set; } = exceptionMessage;
+        
         public string ErrorType { get; set; } = errorType;
     }
 }

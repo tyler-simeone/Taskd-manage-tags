@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Taskd_manage_tags.src.models;
+using Taskd_manage_tags.src.models.errors;
 using Taskd_manage_tags.src.models.requests;
 using Taskd_manage_tags.src.repository;
+using Taskd_manage_tags.src.util;
 
 namespace manage_tags.src.controller
 {
@@ -54,9 +56,15 @@ namespace manage_tags.src.controller
                     var tagId = await _tagsRepository.CreateTag(tag.TagName, tag.UserId, tag.BoardId);
                     return Ok(tagId);
                 }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
                     throw;
                 }
             }
