@@ -9,6 +9,8 @@ namespace manage_tags.src.models
 
         public int TagId { get; set; }
         
+        public int BoardId { get; set; }
+        
         public string TagName { get; set; }
 
         public DateTime CreateDatetime { get; set; }

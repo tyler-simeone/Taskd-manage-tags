@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using manage_tags.src.models;
 using Microsoft.IdentityModel.Tokens;
@@ -20,15 +19,16 @@ namespace manage_tags.src.dataservice
                 _conx = _configuration.GetConnectionString("LocalDBConnection");
         }
 
-        public async Task<TagList> GetTags(int userId)
+        public async Task<TagList> GetTags(int userId, int boardId)
         {
             using (MySqlConnection connection = new(_conx))
             {
-                using (MySqlCommand command = new("taskd_db_dev.TagGetAllByUserId", connection))
+                using (MySqlCommand command = new("taskd_db_dev.TagGetAllByUserIdAndBoardId", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
                     
                     command.Parameters.AddWithValue("@paramUserId", userId);
+                    command.Parameters.AddWithValue("@paramBoardId", boardId);
 
                     try
                     {
@@ -46,6 +46,43 @@ namespace manage_tags.src.dataservice
 
                             return tagList;
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public async Task<int> CreateTag(string tagName, int userId, int boardId)
+        {
+            using (MySqlConnection connection = new(_conx))
+            {
+                using (MySqlCommand command = new("taskd_db_dev.TagPersist", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@paramTagName", tagName);
+                    command.Parameters.AddWithValue("@paramBoardId", boardId);
+                    command.Parameters.AddWithValue("@paramCreateUserId", userId);
+
+                    int tagId = 0;
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                tagId = reader.GetInt32("TagId");
+                            }
+                        }
+                        
+                        return tagId;
                     }
                     catch (Exception ex)
                     {
@@ -86,6 +123,7 @@ namespace manage_tags.src.dataservice
         private static Tag ExtractTagFromReader(MySqlDataReader reader)
         {
             int id = reader.GetInt32("TagId");
+            int boardId = reader.GetInt32("BoardId");
             string name = reader.GetString("TagName");
             DateTime createDatetime = reader.GetDateTime("CreateDatetime");
             int createUserId = reader.GetInt32("CreateUserId");
@@ -95,6 +133,7 @@ namespace manage_tags.src.dataservice
             return new Tag()
             {
                 TagId = id,
+                BoardId = boardId,
                 TagName = name,
                 CreateDatetime = createDatetime,
                 CreateUserId = createUserId,

@@ -2,9 +2,9 @@ public interface IRequestValidator
 {
     bool ValidateGetTags(int userId);
     
-    bool ValidateCreateTag(CreateTag createTaskRequest);
+    bool ValidateCreateTag(CreateTag tag);
 
-    bool ValidateDeleteTask(int tagId, int userId);
+    bool ValidateDeleteTag(int tagId, int userId);
 }
 
 public class RequestValidator : IRequestValidator
@@ -19,12 +19,12 @@ public class RequestValidator : IRequestValidator
         return true;
     }
 
-    public bool ValidateCreateTag(CreateTag createTaskRequest)
+    public bool ValidateCreateTag(CreateTag tag)
     {
         return true;
     }
     
-    public bool ValidateDeleteTask(int tagId, int userId)
+    public bool ValidateDeleteTag(int tagId, int userId)
     {
         return true;
     }

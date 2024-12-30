@@ -12,12 +12,25 @@ namespace manage_tags.src.repository
             _tagsDataservice = tagsDataservice;
         }
 
-        public async Task<TagList> GetTags(int userId)
+        public async Task<TagList> GetTags(int userId, int boardId)
         {
             try
             {
-                TagList tagList = await _tagsDataservice.GetTags(userId);
+                TagList tagList = await _tagsDataservice.GetTags(userId, boardId);
                 return tagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<int> CreateTag(string tagName, int userId, int boardId)
+        {
+            try
+            {
+                return await _tagsDataservice.CreateTag(tagName, userId, boardId);
             }
             catch (Exception ex)
             {
