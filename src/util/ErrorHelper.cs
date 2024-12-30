@@ -9,7 +9,8 @@ namespace Taskd_manage_tags.src.util
             return new
             {
                 ex.StatusCode,
-                ex.ExceptionDetails,
+                ex.ErrorType,
+                ex.ExceptionDetails
             };
         }
     }
