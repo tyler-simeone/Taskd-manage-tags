@@ -116,7 +116,7 @@ namespace Taskd_manage_tags.src.dataservice
         {
             using (MySqlConnection connection = new(_conx))
             {
-                using MySqlCommand command = new("taskd_db_dev.TagTaskCheckIsUnique", connection);
+                using MySqlCommand command = new("taskd_db_dev.TaskTagCheckIsUnique", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@paramTagId", tagId);
                 command.Parameters.AddWithValue("@paramTaskId", taskId);
