@@ -38,6 +38,19 @@ namespace Taskd_manage_tags.src.repository
                 throw;
             }
         }
+        
+        public async Task<int> AddTagToTask(int userId, int boardId, int tagId, int taskId)
+        {
+            try
+            {
+                return await _tagsDataservice.AddTagToTask(userId, boardId, tagId, taskId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
 
         public void DeleteTag(int tagId, int userId)
         {

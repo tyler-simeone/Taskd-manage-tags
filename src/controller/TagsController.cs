@@ -79,6 +79,35 @@ namespace manage_tags.src.controller
                 return BadRequest("tagName and userId are required.");
             }
         }
+        
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<int>> AddTagToTask(AddTagToTask payload)
+        {
+            if (_validator.ValidateAddTagToTask(payload))
+            {
+                try
+                {
+                    var tagId = await _tagsRepository.AddTagToTask(payload.UserId, payload.BoardId, payload.TagId, payload.TaskId);
+                    return Ok(tagId);
+                }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
+                    throw;
+                }
+            }
+            else
+            {
+                return BadRequest("userId, boardId, tagId, and taskId are required.");
+            }
+        }
 
         [HttpDelete("{tagId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

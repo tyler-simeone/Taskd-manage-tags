@@ -111,6 +111,68 @@ namespace Taskd_manage_tags.src.dataservice
                 }
             }
         }
+        
+        public async Task<int> AddTagToTask(int userId, int boardId, int tagId, int taskId)
+        {
+            using (MySqlConnection connection = new(_conx))
+            {
+                using MySqlCommand command = new("taskd_db_dev.TagTaskCheckIsUnique", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@paramTagId", tagId);
+                command.Parameters.AddWithValue("@paramTaskId", taskId);
+
+                try
+                {
+                    await connection.OpenAsync();
+
+                    using MySqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        if (!reader.IsDBNull(reader.GetOrdinal("TaskTagId")))
+                            throw new ExistingTaskTagError(
+                                StatusCodes.Status500InternalServerError,
+                                String.Format(ErrorMessages.ExistingTaskTagError, tagId)
+                            );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"taskd_db_dev.TagCheckIsUnique Error: {ex.Message}");
+                    throw;
+                }
+            }
+
+            using (MySqlConnection connection = new(_conx))
+            {
+                using MySqlCommand command = new("taskd_db_dev.TaskTagPersist", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@paramTagId", tagId);
+                command.Parameters.AddWithValue("@paramTaskId", taskId);
+                command.Parameters.AddWithValue("@paramCreateUserId", userId);
+
+                int taskTagId = 0;
+
+                try
+                {
+                    await connection.OpenAsync();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tagId = reader.GetInt32("TaskTagId");
+                        }
+                    }
+
+                    return taskTagId;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"taskd_db_dev.TaskTagPersist Error: {ex.Message}");
+                    throw;
+                }
+            }
+        }
 
         public async void DeleteTag(int tagId, int userId)
         {
