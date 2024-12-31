@@ -50,6 +50,35 @@ namespace manage_tags.src.controller
                 return BadRequest("User ID is required.");
             }
         }
+        
+        [HttpGet("task")]
+        [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TaskTagList>> GetTaskTags(int userId, int boardId)
+        {
+            if (_validator.ValidateGetTags(userId))
+            {
+                try
+                {
+                    TagList tagList = await _tagsRepository.GetTags(userId, boardId);
+                    return Ok(tagList);
+                }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
+                    throw;
+                }
+            }
+            else
+            {
+                return BadRequest("User ID is required.");
+            }
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -80,7 +109,7 @@ namespace manage_tags.src.controller
             }
         }
         
-        [HttpPost]
+        [HttpPost("{task}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> AddTagToTask(AddTagToTask payload)
         {

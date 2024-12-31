@@ -40,7 +40,8 @@ namespace Taskd_manage_tags.src.dataservice
                     Tag tag = ExtractTagFromReader(reader);
                     tagList.Tags.Add(tag);
                 }
-
+                
+                tagList.Total = tagList.Tags.Count;
                 return tagList;
             }
             catch (Exception ex)
@@ -75,7 +76,7 @@ namespace Taskd_manage_tags.src.dataservice
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"taskd_db_dev.TagCheckIsUnique Error: {ex.Message}");
+                    Console.WriteLine($"TagCheckIsUnique Error: {ex.Message}");
                     throw;
                 }
             }
@@ -106,7 +107,7 @@ namespace Taskd_manage_tags.src.dataservice
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"taskd_db_dev.TagPersist Error: {ex.Message}");
+                    Console.WriteLine($"TagPersist Error: {ex.Message}");
                     throw;
                 }
             }
@@ -131,13 +132,13 @@ namespace Taskd_manage_tags.src.dataservice
                         if (!reader.IsDBNull(reader.GetOrdinal("TaskTagId")))
                             throw new ExistingTaskTagError(
                                 StatusCodes.Status500InternalServerError,
-                                String.Format(ErrorMessages.ExistingTaskTagError, tagId)
+                                String.Format(ErrorMessages.ExistingTaskTagError, taskId, tagId)
                             );
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"taskd_db_dev.TagCheckIsUnique Error: {ex.Message}");
+                    Console.WriteLine($"TaskTagCheckIsUnique Error: {ex.Message}");
                     throw;
                 }
             }
@@ -168,7 +169,7 @@ namespace Taskd_manage_tags.src.dataservice
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"taskd_db_dev.TaskTagPersist Error: {ex.Message}");
+                    Console.WriteLine($"TaskTagPersist Error: {ex.Message}");
                     throw;
                 }
             }
@@ -189,7 +190,7 @@ namespace Taskd_manage_tags.src.dataservice
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"DeleteTag Error: {ex.Message}");
                 throw;
             }
         }
