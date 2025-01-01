@@ -9,6 +9,8 @@ public interface IRequestValidator
     bool ValidateAddTagToTask(AddTagToTask tag);
 
     bool ValidateDeleteTag(int tagId, int userId);
+    
+    bool ValidateDeleteTagFromTask(int taskTagId, int userId);
 }
 
 public class RequestValidator : IRequestValidator
@@ -34,6 +36,11 @@ public class RequestValidator : IRequestValidator
     }
     
     public bool ValidateDeleteTag(int tagId, int userId)
+    {
+        return true;
+    }
+    
+    public bool ValidateDeleteTagFromTask(int taskTagId, int userId)
     {
         return true;
     }

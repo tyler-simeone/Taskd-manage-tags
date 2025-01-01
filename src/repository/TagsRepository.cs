@@ -12,6 +12,12 @@ namespace Taskd_manage_tags.src.repository
             _tagsDataservice = tagsDataservice;
         }
 
+        /// <summary>
+        /// Get all tags per board. The list of available tags to add to a task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
         public async Task<TagList> GetTagsByBoardId(int userId, int boardId)
         {
             try
@@ -26,6 +32,12 @@ namespace Taskd_manage_tags.src.repository
             }
         }
         
+        /// <summary>
+        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
         public async Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
         {
             try
@@ -71,6 +83,19 @@ namespace Taskd_manage_tags.src.repository
             try
             {
                 _tagsDataservice.DeleteTag(tagId, userId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+        
+        public void DeleteTagFromTask(int taskTagId, int userId)
+        {
+            try
+            {
+                _tagsDataservice.DeleteTagFromTask(taskTagId, userId);
             }
             catch (Exception ex)
             {

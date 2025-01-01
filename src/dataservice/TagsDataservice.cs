@@ -212,7 +212,7 @@ namespace Taskd_manage_tags.src.dataservice
                     {
                         while (reader.Read())
                         {
-                            tagId = reader.GetInt32("TaskTagId");
+                            taskTagId = reader.GetInt32("TaskTagId");
                         }
                     }
 
@@ -232,6 +232,26 @@ namespace Taskd_manage_tags.src.dataservice
             using MySqlCommand command = new("taskd_db_dev.TagDelete", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramTagId", tagId);
+            command.Parameters.AddWithValue("@paramUpdateUserId", userId);
+
+            try
+            {
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DeleteTag Error: {ex.Message}");
+                throw;
+            }
+        }
+        
+        public async void DeleteTagFromTask(int taskTagId, int userId)
+        {
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TaskTagDelete", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramTaskTagId", taskTagId);
             command.Parameters.AddWithValue("@paramUpdateUserId", userId);
 
             try

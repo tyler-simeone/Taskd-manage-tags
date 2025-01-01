@@ -13,5 +13,7 @@ namespace Taskd_manage_tags.src.dataservice
         Task<int> AddTagToTask(int userId, int boardId, int tagId, int taskId);
         
         void DeleteTag(int tagId, int userId);
+
+        void DeleteTagFromTask(int taskTagId, int userId);
     }
 }

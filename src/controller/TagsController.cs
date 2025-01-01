@@ -22,6 +22,12 @@ namespace manage_tags.src.controller
             _tagsRepository = tagsRepository;
         }
 
+        /// <summary>
+        /// Get all tags per board. The list of available tags to add to a task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
         public async Task<ActionResult<TagList>> GetTagsByBoardId(int userId, int boardId)
@@ -51,6 +57,12 @@ namespace manage_tags.src.controller
             }
         }
         
+        /// <summary>
+        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
         [HttpGet("task")]
         [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
         public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
@@ -82,7 +94,7 @@ namespace manage_tags.src.controller
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> CreateTag(CreateTag tag)
+        public async Task<ActionResult<int>> CreateTag([FromBody] CreateTag tag)
         {
             if (_validator.ValidateCreateTag(tag))
             {
@@ -109,9 +121,9 @@ namespace manage_tags.src.controller
             }
         }
         
-        [HttpPost("{task}")]
+        [HttpPost("task")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<int>> AddTagToTask(AddTagToTask payload)
+        public async Task<ActionResult<int>> AddTagToTask([FromBody] AddTagToTask payload)
         {
             if (_validator.ValidateAddTagToTask(payload))
             {
@@ -164,6 +176,35 @@ namespace manage_tags.src.controller
             else
             {
                 return BadRequest("tagId and userId are required.");
+            }
+        }
+        
+        [HttpDelete("task")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public IActionResult DeleteTagFromTask(int taskTagId, int userId)
+        {
+            if (_validator.ValidateDeleteTagFromTask(taskTagId, userId))
+            {
+                try
+                {
+                    _tagsRepository.DeleteTagFromTask(taskTagId, userId);
+                    return Ok();
+                }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
+                    throw;
+                }
+            }
+            else
+            {
+                return BadRequest("taskTagId and userId are required.");
             }
         }
     }

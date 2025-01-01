@@ -13,5 +13,7 @@ namespace Taskd_manage_tags.src.repository
         Task<int> AddTagToTask(int userId, int boardId, int tagId, int taskId);
 
         void DeleteTag(int taskId, int userId);
+        
+        void DeleteTagFromTask(int taskTagId, int userId);
     }
 }
