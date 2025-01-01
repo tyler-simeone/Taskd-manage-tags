@@ -4,9 +4,9 @@ namespace Taskd_manage_tags.src.models
     {
         public TaskTagList()
         {
-            TaskTags = [];
+            Data = [];
         }
         
-        public List<TaskTag> TaskTags { get; set; }
+        public List<TaskTag> Data { get; set; }
     }
 }

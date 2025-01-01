@@ -4,7 +4,9 @@ namespace Taskd_manage_tags.src.repository
 {
     public interface ITagsRepository
     {
-        Task<TagList> GetTags(int userId, int boardId);
+        Task<TagList> GetTagsByBoardId(int userId, int boardId);
+        
+        Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId);
 
         Task<int> CreateTag(string tagName, int userId, int boardId);
         

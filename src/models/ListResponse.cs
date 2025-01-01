@@ -7,8 +7,8 @@ namespace Taskd_manage_tags.src.models
 
         }
 
-        public int Total;
-
+        public int Total { get; set; }
+        
         public int PageNumber { get; set; }
 
         public int PageSize { get; set; }

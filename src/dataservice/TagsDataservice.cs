@@ -21,7 +21,13 @@ namespace Taskd_manage_tags.src.dataservice
                 _conx = _configuration.GetConnectionString("LocalDBConnection");
         }
 
-        public async Task<TagList> GetTags(int userId, int boardId)
+        /// <summary>
+        /// Get all tags per board. The list of available tags to add to a task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<TagList> GetTagsByBoardId(int userId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
             using MySqlCommand command = new("taskd_db_dev.TagGetAllByUserIdAndBoardId", connection);
@@ -38,15 +44,51 @@ namespace Taskd_manage_tags.src.dataservice
                 while (reader.Read())
                 {
                     Tag tag = ExtractTagFromReader(reader);
-                    tagList.Tags.Add(tag);
+                    tagList.Data.Add(tag);
                 }
-                
-                tagList.Total = tagList.Tags.Count;
+
+                tagList.Total = tagList.Data.Count;
                 return tagList;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"GetTags Error: {ex.Message}");
+                Console.WriteLine($"GetTagsByBoardId Error: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
+        {
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TaskTagGetByUserIdAndBoardId", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramUserId", userId);
+            command.Parameters.AddWithValue("@paramBoardId", boardId);
+
+            var taskTagList = new TaskTagList();
+
+            try
+            {
+                await connection.OpenAsync();
+                using MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    TaskTag taskTag = ExtractTaskTagFromReader(reader);
+                    taskTagList.Data.Add(taskTag);
+                }
+
+                taskTagList.Total = taskTagList.Data.Count;
+                return taskTagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetTagsByTaskId Error: {ex.Message}");
                 throw;
             }
         }
@@ -113,6 +155,15 @@ namespace Taskd_manage_tags.src.dataservice
             }
         }
         
+        /// <summary>
+        /// Connects a tag to a task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <param name="tagId"></param>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        /// <exception cref="ExistingTaskTagError"></exception>
         public async Task<int> AddTagToTask(int userId, int boardId, int tagId, int taskId)
         {
             using (MySqlConnection connection = new(_conx))
@@ -207,9 +258,35 @@ namespace Taskd_manage_tags.src.dataservice
             DateTime? updateDatetime = reader.IsDBNull(reader.GetOrdinal("UpdateDatetime")) ? null : reader.GetDateTime("UpdateDatetime");
             int? updateUserId = reader.IsDBNull(reader.GetOrdinal("UpdateUserId")) ? null : reader.GetInt32("UpdateUserId");
 
-            return new Tag()
+            return new Tag
             {
                 TagId = id,
+                BoardId = boardId,
+                TagName = name,
+                CreateDatetime = createDatetime,
+                CreateUserId = createUserId,
+                UpdateDatetime = updateDatetime,
+                UpdateUserId = updateUserId
+            };
+        }
+        
+        private static TaskTag ExtractTaskTagFromReader(MySqlDataReader reader)
+        {
+            int taskTagId = reader.GetInt32("TaskTagId");
+            int tagId = reader.GetInt32("TagId");
+            int taskId = reader.GetInt32("TaskId");
+            int boardId = reader.GetInt32("BoardId");
+            string name = reader.GetString("TagName");
+            DateTime createDatetime = reader.GetDateTime("CreateDatetime");
+            int createUserId = reader.GetInt32("CreateUserId");
+            DateTime? updateDatetime = reader.IsDBNull(reader.GetOrdinal("UpdateDatetime")) ? null : reader.GetDateTime("UpdateDatetime");
+            int? updateUserId = reader.IsDBNull(reader.GetOrdinal("UpdateUserId")) ? null : reader.GetInt32("UpdateUserId");
+
+            return new TaskTag
+            {
+                TaskTagId = taskTagId,
+                TagId = tagId,
+                TaskId = taskId,
                 BoardId = boardId,
                 TagName = name,
                 CreateDatetime = createDatetime,

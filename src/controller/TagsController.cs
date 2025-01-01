@@ -24,13 +24,13 @@ namespace manage_tags.src.controller
 
         [HttpGet]
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TagList>> GetTags(int userId, int boardId)
+        public async Task<ActionResult<TagList>> GetTagsByBoardId(int userId, int boardId)
         {
             if (_validator.ValidateGetTags(userId))
             {
                 try
                 {
-                    TagList tagList = await _tagsRepository.GetTags(userId, boardId);
+                    TagList tagList = await _tagsRepository.GetTagsByBoardId(userId, boardId);
                     return Ok(tagList);
                 }
                 catch (Error ex)
@@ -52,15 +52,15 @@ namespace manage_tags.src.controller
         }
         
         [HttpGet("task")]
-        [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TaskTagList>> GetTaskTags(int userId, int boardId)
+        [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
         {
             if (_validator.ValidateGetTags(userId))
             {
                 try
                 {
-                    TagList tagList = await _tagsRepository.GetTags(userId, boardId);
-                    return Ok(tagList);
+                    TaskTagList taskTagList = await _tagsRepository.GetTaskTagsByUserIdAndBoardId(userId, boardId);
+                    return Ok(taskTagList);
                 }
                 catch (Error ex)
                 {
