@@ -58,7 +58,43 @@ namespace Taskd_manage_tags.src.dataservice
         }
         
         /// <summary>
-        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// Get all tags by task ID. Will filter out any tags that have already been assigned to the Task.
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<TagList> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        {
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TagGetListByTaskIdAndBoardId", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramTaskId", taskId);
+            command.Parameters.AddWithValue("@paramBoardId", boardId);
+
+            var tagList = new TagList();
+
+            try
+            {
+                await connection.OpenAsync();
+                using MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Tag tag = ExtractTagFromReader(reader);
+                    tagList.Data.Add(tag);
+                }
+
+                tagList.Total = tagList.Data.Count;
+                return tagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetTaskTagsByTaskIdAndBoardId Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get all tags with their parent tasks. Board-level view of all tags on their Tasks.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
@@ -66,7 +102,7 @@ namespace Taskd_manage_tags.src.dataservice
         public async Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
-            using MySqlCommand command = new("taskd_db_dev.TaskTagGetByUserIdAndBoardId", connection);
+            using MySqlCommand command = new("taskd_db_dev.TagTaskGetListByBoardIdAndUserId", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramUserId", userId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
@@ -168,7 +204,7 @@ namespace Taskd_manage_tags.src.dataservice
         {
             using (MySqlConnection connection = new(_conx))
             {
-                using MySqlCommand command = new("taskd_db_dev.TaskTagCheckIsUnique", connection);
+                using MySqlCommand command = new("taskd_db_dev.TagTaskCheckIsUnique", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@paramTagId", tagId);
                 command.Parameters.AddWithValue("@paramTaskId", taskId);
@@ -189,14 +225,14 @@ namespace Taskd_manage_tags.src.dataservice
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"TaskTagCheckIsUnique Error: {ex.Message}");
+                    Console.WriteLine($"TagTaskCheckIsUnique Error: {ex.Message}");
                     throw;
                 }
             }
 
             using (MySqlConnection connection = new(_conx))
             {
-                using MySqlCommand command = new("taskd_db_dev.TaskTagPersist", connection);
+                using MySqlCommand command = new("taskd_db_dev.TagTaskPersist", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@paramTagId", tagId);
                 command.Parameters.AddWithValue("@paramTaskId", taskId);
@@ -249,7 +285,7 @@ namespace Taskd_manage_tags.src.dataservice
         public async void DeleteTagFromTask(int taskTagId, int userId)
         {
             using MySqlConnection connection = new(_conx);
-            using MySqlCommand command = new("taskd_db_dev.TaskTagDelete", connection);
+            using MySqlCommand command = new("taskd_db_dev.TagTaskDelete", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramTaskTagId", taskTagId);
             command.Parameters.AddWithValue("@paramUpdateUserId", userId);

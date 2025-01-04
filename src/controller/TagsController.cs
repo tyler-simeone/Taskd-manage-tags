@@ -58,14 +58,49 @@ namespace manage_tags.src.controller
         }
         
         /// <summary>
+        /// Get all tags by task ID. Will filter out any tags that have already been assigned to the Task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        [HttpGet("task/{taskId}")]
+        [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TagList>> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        {
+            // if (_validator.ValidateGetTags(userId))
+            // {
+                try
+                {
+                    TagList tagList = await _tagsRepository.GetTagsByTaskIdAndBoardId(taskId, boardId);
+                    return Ok(tagList);
+                }
+                catch (Error ex)
+                {
+                    Console.WriteLine($"Application Error: {ex.StackTrace}");
+                    var error = ErrorHelper.MapExceptionToError(ex);
+                    return BadRequest(error);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unknown Error: {ex.Message}");
+                    throw;
+                }
+            // }
+            // else
+            // {
+            //     return BadRequest("User ID is required.");
+            // }
+        }
+
+        /// <summary>
         /// Get all tags with their parent tasks. After the tags have been tied to tasks.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
-        [HttpGet("task")]
+        [HttpGet("board/{boardId}")]
         [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
+        public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int boardId, int userId)
         {
             if (_validator.ValidateGetTags(userId))
             {

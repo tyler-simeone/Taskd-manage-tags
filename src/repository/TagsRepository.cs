@@ -33,7 +33,27 @@ namespace Taskd_manage_tags.src.repository
         }
         
         /// <summary>
-        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// Get all tags by task ID. Will filter out any tags that have already been assigned to the Task.
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<TagList> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        {
+            try
+            {
+                TagList tagList = await _tagsDataservice.GetTagsByTaskIdAndBoardId(taskId, boardId);
+                return tagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get all tags with their parent tasks. Board-level view of all tags on their Tasks.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
