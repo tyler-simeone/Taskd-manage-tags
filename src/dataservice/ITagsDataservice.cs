@@ -6,7 +6,7 @@ namespace Taskd_manage_tags.src.dataservice
     {
         Task<TagList> GetTagsByBoardId(int userId, int boardId);
 
-        Task<TagList> GetTagsByTaskIdAndBoardId(int taskId, int boardId);
+        Task<TagList> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId);
 
         Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId);
 

@@ -63,7 +63,7 @@ namespace Taskd_manage_tags.src.dataservice
         /// <param name="taskId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
-        public async Task<TagList> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        public async Task<TagList> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
             using MySqlCommand command = new("taskd_db_dev.TagGetListByTaskIdAndBoardId", connection);

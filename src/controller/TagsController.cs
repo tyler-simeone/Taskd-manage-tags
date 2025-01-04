@@ -65,13 +65,13 @@ namespace manage_tags.src.controller
         /// <returns></returns>
         [HttpGet("task/{taskId}")]
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TagList>> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        public async Task<ActionResult<TagList>> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId)
         {
             // if (_validator.ValidateGetTags(userId))
             // {
                 try
                 {
-                    TagList tagList = await _tagsRepository.GetTagsByTaskIdAndBoardId(taskId, boardId);
+                    TagList tagList = await _tagsRepository.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
                     return Ok(tagList);
                 }
                 catch (Error ex)

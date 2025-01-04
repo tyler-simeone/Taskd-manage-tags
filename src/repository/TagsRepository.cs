@@ -38,11 +38,11 @@ namespace Taskd_manage_tags.src.repository
         /// <param name="taskId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
-        public async Task<TagList> GetTagsByTaskIdAndBoardId(int taskId, int boardId)
+        public async Task<TagList> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId)
         {
             try
             {
-                TagList tagList = await _tagsDataservice.GetTagsByTaskIdAndBoardId(taskId, boardId);
+                TagList tagList = await _tagsDataservice.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
                 return tagList;
             }
             catch (Exception ex)
