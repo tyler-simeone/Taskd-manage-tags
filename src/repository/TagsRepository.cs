@@ -3,14 +3,9 @@ using Taskd_manage_tags.src.models;
 
 namespace Taskd_manage_tags.src.repository
 {
-    public class TagsRepository : ITagsRepository
+    public class TagsRepository(ITagsDataservice tagsDataservice) : ITagsRepository
     {
-        ITagsDataservice _tagsDataservice;
-
-        public TagsRepository(ITagsDataservice tagsDataservice)
-        {
-            _tagsDataservice = tagsDataservice;
-        }
+        readonly ITagsDataservice _tagsDataservice = tagsDataservice;
 
         /// <summary>
         /// Get all tags per board. The list of available tags to add to a task.

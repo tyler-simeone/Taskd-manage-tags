@@ -6,31 +6,27 @@ using Taskd_manage_tags.src.models.requests;
 using Taskd_manage_tags.src.repository;
 using Taskd_manage_tags.src.util;
 
-namespace manage_tags.src.controller
+namespace Taskd_manage_tags.src.controller
 {
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class TagsController : Controller
+    public class TagsController(ITagsRepository tagsRepository, IRequestValidator requestValidator) : Controller
     {
-        IRequestValidator _validator;
-        ITagsRepository _tagsRepository;
+        readonly IRequestValidator _validator = requestValidator;
+        readonly ITagsRepository _tagsRepository = tagsRepository;
 
-        public TagsController(ITagsRepository tagsRepository, IRequestValidator requestValidator)
-        {
-            _validator = requestValidator;
-            _tagsRepository = tagsRepository;
-        }
+        #region GETs
 
         /// <summary>
-        /// Get all tags per board. The list of available tags to add to a task.
+        /// Get all tags per board. The list of available tags to add to a new task.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TagList>> GetTagsByBoardId(int userId, int boardId)
+        public async Task<ActionResult<TagList>> GetAllTagsByBoardId(int userId, int boardId)
         {
             if (_validator.ValidateGetTags(userId))
             {
@@ -56,7 +52,7 @@ namespace manage_tags.src.controller
                 return BadRequest("User ID is required.");
             }
         }
-        
+
         /// <summary>
         /// Get all tags by task ID. Will filter out any tags that have already been assigned to the Task.
         /// </summary>
@@ -69,22 +65,22 @@ namespace manage_tags.src.controller
         {
             // if (_validator.ValidateGetTags(userId))
             // {
-                try
-                {
-                    TagList tagList = await _tagsRepository.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
-                    return Ok(tagList);
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+            try
+            {
+                TagList tagList = await _tagsRepository.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
+                return Ok(tagList);
+            }
+            catch (Error ex)
+            {
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
+            }
             // }
             // else
             // {
@@ -93,7 +89,7 @@ namespace manage_tags.src.controller
         }
 
         /// <summary>
-        /// Get all tags with their parent tasks. After the tags have been tied to tasks.
+        /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
@@ -127,6 +123,8 @@ namespace manage_tags.src.controller
             }
         }
 
+        #endregion GETs
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> CreateTag([FromBody] CreateTag tag)
@@ -155,7 +153,7 @@ namespace manage_tags.src.controller
                 return BadRequest("tagName and userId are required.");
             }
         }
-        
+
         [HttpPost("task")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> AddTagToTask([FromBody] AddTagToTask payload)
@@ -213,7 +211,7 @@ namespace manage_tags.src.controller
                 return BadRequest("tagId and userId are required.");
             }
         }
-        
+
         [HttpDelete("task")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult DeleteTagFromTask(int taskTagId, int userId)

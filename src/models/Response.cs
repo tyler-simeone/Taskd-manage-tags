@@ -4,9 +4,8 @@ namespace Taskd_manage_tags.src.models
     {
         public Response()
         {
-
         }
 
-        public int StatusCode;
+        // public int StatusCode { get; set; }
     }
 }

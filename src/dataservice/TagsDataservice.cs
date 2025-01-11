@@ -1,7 +1,7 @@
 using System.Data;
-using Taskd_manage_tags.src.models;
 using Microsoft.IdentityModel.Tokens;
 using MySql.Data.MySqlClient;
+using Taskd_manage_tags.src.models;
 using Taskd_manage_tags.src.models.errors;
 using Taskd_manage_tags.src.util;
 
@@ -35,7 +35,7 @@ namespace Taskd_manage_tags.src.dataservice
             command.Parameters.AddWithValue("@paramUserId", userId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
 
-            var tagList = new TagList();
+            var tags = new List<Tag>();
 
             try
             {
@@ -44,11 +44,10 @@ namespace Taskd_manage_tags.src.dataservice
                 while (reader.Read())
                 {
                     Tag tag = ExtractTagFromReader(reader);
-                    tagList.Data.Add(tag);
+                    tags.Add(tag);
                 }
 
-                tagList.Total = tagList.Data.Count;
-                return tagList;
+                return new TagList(tags);
             }
             catch (Exception ex)
             {
@@ -71,7 +70,7 @@ namespace Taskd_manage_tags.src.dataservice
             command.Parameters.AddWithValue("@paramTaskId", taskId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
 
-            var tagList = new TagList();
+            var tags = new List<Tag>();
 
             try
             {
@@ -80,11 +79,10 @@ namespace Taskd_manage_tags.src.dataservice
                 while (reader.Read())
                 {
                     Tag tag = ExtractTagFromReader(reader);
-                    tagList.Data.Add(tag);
+                    tags.Add(tag);
                 }
 
-                tagList.Total = tagList.Data.Count;
-                return tagList;
+                return new TagList(tags);
             }
             catch (Exception ex)
             {
@@ -102,12 +100,12 @@ namespace Taskd_manage_tags.src.dataservice
         public async Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
-            using MySqlCommand command = new("taskd_db_dev.TagTaskGetListByBoardIdAndUserId", connection);
+            using MySqlCommand command = new("taskd_db_dev.TagGetListByUserIdAndBoardId", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramUserId", userId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
 
-            var taskTagList = new TaskTagList();
+            var taskTags = new List<TaskTag>();
 
             try
             {
@@ -116,11 +114,10 @@ namespace Taskd_manage_tags.src.dataservice
                 while (reader.Read())
                 {
                     TaskTag taskTag = ExtractTaskTagFromReader(reader);
-                    taskTagList.Data.Add(taskTag);
+                    taskTags.Add(taskTag);
                 }
 
-                taskTagList.Total = taskTagList.Data.Count;
-                return taskTagList;
+                return new TaskTagList(taskTags);
             }
             catch (Exception ex)
             {
@@ -328,10 +325,10 @@ namespace Taskd_manage_tags.src.dataservice
         
         private static TaskTag ExtractTaskTagFromReader(MySqlDataReader reader)
         {
-            int taskTagId = reader.GetInt32("TaskTagId");
             int tagId = reader.GetInt32("TagId");
-            int taskId = reader.GetInt32("TaskId");
             int boardId = reader.GetInt32("BoardId");
+            int taskId = reader.GetInt32("TaskId");
+            int taskTagId = reader.GetInt32("TaskTagId");
             string name = reader.GetString("TagName");
             DateTime createDatetime = reader.GetDateTime("CreateDatetime");
             int createUserId = reader.GetInt32("CreateUserId");
