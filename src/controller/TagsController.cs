@@ -28,28 +28,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
         public async Task<ActionResult<TagList>> GetAllTagsByBoardId(int userId, int boardId)
         {
-            if (_validator.ValidateGetTags(userId))
+            try
             {
-                try
-                {
-                    TagList tagList = await _tagsRepository.GetTagsByBoardId(userId, boardId);
-                    return Ok(tagList);
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                TagList tagList = await _tagsRepository.GetTagsByBoardId(userId, boardId);
+                return Ok(tagList);
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("User ID is required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -63,8 +56,6 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(typeof(TagList), StatusCodes.Status200OK)]
         public async Task<ActionResult<TagList>> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId)
         {
-            // if (_validator.ValidateGetTags(userId))
-            // {
             try
             {
                 TagList tagList = await _tagsRepository.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
@@ -81,11 +72,62 @@ namespace Taskd_manage_tags.src.controller
                 Console.WriteLine($"Unknown Error: {ex.Message}");
                 throw;
             }
-            // }
-            // else
-            // {
-            //     return BadRequest("User ID is required.");
-            // }
+        }
+
+        /// <summary>
+        /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        [HttpGet("board/{boardId}/task/{taskId}")]
+        [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
+        public async Task<ActionResult<TaskTagList>> GetTaskTagsByTaskIdAndBoardId(int boardId, int taskId)
+        {
+            try
+            {
+                TaskTagList taskTagList = await _tagsRepository.GetTaskTagsByTaskIdAndBoardId(taskId, boardId);
+                return Ok(taskTagList);
+            }
+            catch (Error ex)
+            {
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        [HttpGet("board/{boardId}/task/{taskId}/list")]
+        [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<TaskTag>>> GetTaskTagsListByTaskIdAndBoardId(int boardId, int taskId)
+        {
+            try
+            {
+                var taskTagList = await _tagsRepository.GetTaskTagsListByTaskIdAndBoardId(taskId, boardId);
+                return Ok(taskTagList);
+            }
+            catch (Error ex)
+            {
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -98,28 +140,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
         public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int boardId, int userId)
         {
-            if (_validator.ValidateGetTags(userId))
+            try
             {
-                try
-                {
-                    TaskTagList taskTagList = await _tagsRepository.GetTaskTagsByUserIdAndBoardId(userId, boardId);
-                    return Ok(taskTagList);
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                TaskTagList taskTagList = await _tagsRepository.GetTaskTagsByUserIdAndBoardId(userId, boardId);
+                return Ok(taskTagList);
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("User ID is required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -129,28 +164,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> CreateTag([FromBody] CreateTag tag)
         {
-            if (_validator.ValidateCreateTag(tag))
+            try
             {
-                try
-                {
-                    var tagId = await _tagsRepository.CreateTag(tag.TagName, tag.UserId, tag.BoardId);
-                    return Ok(tagId);
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                var tagId = await _tagsRepository.CreateTag(tag.TagName, tag.UserId, tag.BoardId);
+                return Ok(tagId);
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("tagName and userId are required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -158,28 +186,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<int>> AddTagToTask([FromBody] AddTagToTask payload)
         {
-            if (_validator.ValidateAddTagToTask(payload))
+            try
             {
-                try
-                {
-                    var tagId = await _tagsRepository.AddTagToTask(payload.UserId, payload.BoardId, payload.TagId, payload.TaskId);
-                    return Ok(tagId);
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                var tagId = await _tagsRepository.AddTagToTask(payload.UserId, payload.BoardId, payload.TagId, payload.TaskId);
+                return Ok(tagId);
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("userId, boardId, tagId, and taskId are required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -187,28 +208,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult DeleteTag(int tagId, int userId)
         {
-            if (_validator.ValidateDeleteTag(tagId, userId))
+            try
             {
-                try
-                {
-                    _tagsRepository.DeleteTag(tagId, userId);
-                    return Ok();
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                _tagsRepository.DeleteTag(tagId, userId);
+                return Ok();
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("tagId and userId are required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
 
@@ -216,28 +230,21 @@ namespace Taskd_manage_tags.src.controller
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult DeleteTagFromTask(int taskTagId, int userId)
         {
-            if (_validator.ValidateDeleteTagFromTask(taskTagId, userId))
+            try
             {
-                try
-                {
-                    _tagsRepository.DeleteTagFromTask(taskTagId, userId);
-                    return Ok();
-                }
-                catch (Error ex)
-                {
-                    Console.WriteLine($"Application Error: {ex.StackTrace}");
-                    var error = ErrorHelper.MapExceptionToError(ex);
-                    return BadRequest(error);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unknown Error: {ex.Message}");
-                    throw;
-                }
+                _tagsRepository.DeleteTagFromTask(taskTagId, userId);
+                return Ok();
             }
-            else
+            catch (Error ex)
             {
-                return BadRequest("taskTagId and userId are required.");
+                Console.WriteLine($"Application Error: {ex.StackTrace}");
+                var error = ErrorHelper.MapExceptionToError(ex);
+                return BadRequest(error);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unknown Error: {ex.Message}");
+                throw;
             }
         }
     }

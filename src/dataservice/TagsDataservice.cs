@@ -65,7 +65,7 @@ namespace Taskd_manage_tags.src.dataservice
         public async Task<TagList> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
-            using MySqlCommand command = new("taskd_db_dev.TagGetListByTaskIdAndBoardId", connection);
+            using MySqlCommand command = new("taskd_db_dev.TagGetAvailableListByTaskIdAndBoardId", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramTaskId", taskId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
@@ -87,6 +87,41 @@ namespace Taskd_manage_tags.src.dataservice
             catch (Exception ex)
             {
                 Console.WriteLine($"GetTaskTagsByTaskIdAndBoardId Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get all tags assigned to an existing task.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<List<TaskTag>> GetTaskTagsByTaskIdAndBoardId(int taskId, int boardId)
+        {
+            using MySqlConnection connection = new(_conx);
+            using MySqlCommand command = new("taskd_db_dev.TaskTagGetListByTaskIdAndBoardId", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@paramTaskId", taskId);
+            command.Parameters.AddWithValue("@paramBoardId", boardId);
+
+            var taskTags = new List<TaskTag>();
+
+            try
+            {
+                await connection.OpenAsync();
+                using MySqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    TaskTag taskTag = ExtractTaskTagFromReader(reader);
+                    taskTags.Add(taskTag);
+                }
+
+                return taskTags;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetTagsByTaskId Error: {ex.Message}");
                 throw;
             }
         }
@@ -214,10 +249,10 @@ namespace Taskd_manage_tags.src.dataservice
                     while (reader.Read())
                     {
                         if (!reader.IsDBNull(reader.GetOrdinal("TaskTagId")))
-                            throw new ExistingTaskTagError(
-                                StatusCodes.Status500InternalServerError,
-                                String.Format(ErrorMessages.ExistingTaskTagError, taskId, tagId)
-                            );
+                        {
+                            throw new ExistingTaskTagError(StatusCodes.Status500InternalServerError,
+                                                           String.Format(ErrorMessages.ExistingTaskTagError, taskId, tagId));
+                        }
                     }
                 }
                 catch (Exception ex)
