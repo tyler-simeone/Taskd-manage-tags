@@ -66,25 +66,6 @@ namespace Taskd_manage_tags.src.repository
                 throw;
             }
         }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="boardId"></param>
-        /// <returns></returns>
-        public async Task<List<TaskTag>> GetTaskTagsListByTaskIdAndBoardId(int taskId, int boardId)
-        {
-            try
-            {
-                return await _tagsDataservice.GetTaskTagsByTaskIdAndBoardId(taskId, boardId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
-        }
 
         /// <summary>
         /// Get all tags with their parent tasks. Board-level view of all tags on their Tasks.

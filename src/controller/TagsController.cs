@@ -101,34 +101,6 @@ namespace Taskd_manage_tags.src.controller
                 throw;
             }
         }
-        
-        /// <summary>
-        /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="boardId"></param>
-        /// <returns></returns>
-        [HttpGet("board/{boardId}/task/{taskId}/list")]
-        [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<TaskTag>>> GetTaskTagsListByTaskIdAndBoardId(int boardId, int taskId)
-        {
-            try
-            {
-                var taskTagList = await _tagsRepository.GetTaskTagsListByTaskIdAndBoardId(taskId, boardId);
-                return Ok(taskTagList);
-            }
-            catch (Error ex)
-            {
-                Console.WriteLine($"Application Error: {ex.StackTrace}");
-                var error = ErrorHelper.MapExceptionToError(ex);
-                return BadRequest(error);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unknown Error: {ex.Message}");
-                throw;
-            }
-        }
 
         /// <summary>
         /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
