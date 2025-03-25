@@ -3,14 +3,9 @@ using Taskd_manage_tags.src.models;
 
 namespace Taskd_manage_tags.src.repository
 {
-    public class TagsRepository : ITagsRepository
+    public class TagsRepository(ITagsDataservice tagsDataservice) : ITagsRepository
     {
-        ITagsDataservice _tagsDataservice;
-
-        public TagsRepository(ITagsDataservice tagsDataservice)
-        {
-            _tagsDataservice = tagsDataservice;
-        }
+        readonly ITagsDataservice _tagsDataservice = tagsDataservice;
 
         /// <summary>
         /// Get all tags per board. The list of available tags to add to a task.
@@ -44,6 +39,26 @@ namespace Taskd_manage_tags.src.repository
             {
                 TagList tagList = await _tagsDataservice.GetAvailableTagsByTaskIdAndBoardId(taskId, boardId);
                 return tagList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="boardId"></param>
+        /// <returns></returns>
+        public async Task<TaskTagList> GetTaskTagsByTaskIdAndBoardId(int taskId, int boardId)
+        {
+            try
+            {
+                var taskTags = await _tagsDataservice.GetTaskTagsByTaskIdAndBoardId(taskId, boardId);
+                return new TaskTagList(taskTags);
             }
             catch (Exception ex)
             {

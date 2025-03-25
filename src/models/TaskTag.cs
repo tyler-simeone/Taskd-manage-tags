@@ -4,7 +4,6 @@ namespace Taskd_manage_tags.src.models
     {
         public TaskTag()
         {
-
         }
 
         public int TaskTagId { get; set; }

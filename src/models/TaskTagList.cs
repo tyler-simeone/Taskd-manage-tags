@@ -1,12 +1,6 @@
 namespace Taskd_manage_tags.src.models
 {
-    public class TaskTagList : ListResponse
+    public class TaskTagList(List<TaskTag> taskTags) : ListResponse<TaskTag>(taskTags)
     {
-        public TaskTagList()
-        {
-            Data = [];
-        }
-        
-        public List<TaskTag> Data { get; set; }
     }
 }

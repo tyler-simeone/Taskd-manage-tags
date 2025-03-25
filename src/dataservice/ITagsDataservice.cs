@@ -8,6 +8,8 @@ namespace Taskd_manage_tags.src.dataservice
 
         Task<TagList> GetAvailableTagsByTaskIdAndBoardId(int taskId, int boardId);
 
+        Task<List<TaskTag>> GetTaskTagsByTaskIdAndBoardId(int taskId, int boardId);
+        
         Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId);
 
         Task<int> CreateTag(string tagName, int userId, int boardId);
