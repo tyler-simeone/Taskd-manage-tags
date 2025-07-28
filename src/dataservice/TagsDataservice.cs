@@ -132,10 +132,10 @@ namespace Taskd_manage_tags.src.dataservice
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
-        public async Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId)
+        public async Task<TaskTagList> GetAssignedTagsByUserIdAndBoardId(int userId, int boardId)
         {
             using MySqlConnection connection = new(_conx);
-            using MySqlCommand command = new("taskd_db_dev.TagGetListByUserIdAndBoardId", connection);
+            using MySqlCommand command = new("taskd_db_dev.TaskTagGetListByUserIdAndBoardId", connection);
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@paramUserId", userId);
             command.Parameters.AddWithValue("@paramBoardId", boardId);
@@ -362,8 +362,23 @@ namespace Taskd_manage_tags.src.dataservice
         {
             int tagId = reader.GetInt32("TagId");
             int boardId = reader.GetInt32("BoardId");
-            int taskId = reader.GetInt32("TaskId");
-            int taskTagId = reader.GetInt32("TaskTagId");
+            int taskId = default;
+            int taskTagId = default;
+            try
+            {
+                if (!reader.IsDBNull(reader.GetOrdinal("TaskId")))
+                {
+                    taskId = reader.GetInt32("TaskId");
+                }
+                if (!reader.IsDBNull(reader.GetOrdinal("TaskTagId")))
+                {
+                    taskTagId = reader.GetInt32("TaskTagId");
+                }
+            }
+            catch
+            { 
+                //ignore and move on
+            }
             string name = reader.GetString("TagName");
             DateTime createDatetime = reader.GetDateTime("CreateDatetime");
             int createUserId = reader.GetInt32("CreateUserId");

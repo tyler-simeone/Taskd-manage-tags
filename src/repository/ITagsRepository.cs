@@ -10,7 +10,7 @@ namespace Taskd_manage_tags.src.repository
 
         Task<TaskTagList> GetTaskTagsByTaskIdAndBoardId(int taskId, int boardId);
                 
-        Task<TaskTagList> GetTaskTagsByUserIdAndBoardId(int userId, int boardId);
+        Task<TaskTagList> GetAssignedTagsByUserIdAndBoardId(int userId, int boardId);
 
         Task<int> CreateTag(string tagName, int userId, int boardId);
         

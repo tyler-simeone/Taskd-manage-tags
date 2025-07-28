@@ -103,18 +103,18 @@ namespace Taskd_manage_tags.src.controller
         }
 
         /// <summary>
-        /// Get all tags with their parent tasks. Shows all tags tied to tasks at the board view.
+        /// Shows all unique tags tied to tasks at the board view.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="boardId"></param>
         /// <returns></returns>
         [HttpGet("board/{boardId}")]
         [ProducesResponseType(typeof(TaskTagList), StatusCodes.Status200OK)]
-        public async Task<ActionResult<TaskTagList>> GetTaskTagsByUserIdAndBoardId(int boardId, int userId)
+        public async Task<ActionResult<TaskTagList>> GetAssignedTagsByUserIdAndBoardId(int boardId, int userId)
         {
             try
             {
-                TaskTagList taskTagList = await _tagsRepository.GetTaskTagsByUserIdAndBoardId(userId, boardId);
+                TaskTagList taskTagList = await _tagsRepository.GetAssignedTagsByUserIdAndBoardId(userId, boardId);
                 return Ok(taskTagList);
             }
             catch (Error ex)
