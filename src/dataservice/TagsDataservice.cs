@@ -236,7 +236,7 @@ namespace Taskd_manage_tags.src.dataservice
         {
             using (MySqlConnection connection = new(_conx))
             {
-                using MySqlCommand command = new("taskd_db_dev.TagTaskCheckIsUnique", connection);
+                using MySqlCommand command = new("taskd_db_dev.TaskTagCheckIsUnique", connection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@paramTagId", tagId);
                 command.Parameters.AddWithValue("@paramTaskId", taskId);
@@ -366,14 +366,8 @@ namespace Taskd_manage_tags.src.dataservice
             int taskTagId = default;
             try
             {
-                if (!reader.IsDBNull(reader.GetOrdinal("TaskId")))
-                {
-                    taskId = reader.GetInt32("TaskId");
-                }
-                if (!reader.IsDBNull(reader.GetOrdinal("TaskTagId")))
-                {
-                    taskTagId = reader.GetInt32("TaskTagId");
-                }
+                taskId = reader.IsDBNull(reader.GetOrdinal("TaskId")) ? default : reader.GetInt32("TaskId");
+                taskTagId = reader.IsDBNull(reader.GetOrdinal("TaskTagId")) ? default : reader.GetInt32("TaskTagId");
             }
             catch
             { 
